@@ -14,13 +14,13 @@ background.src = "./i4.jpg";
 
 let leftarrow = false
 let rightarrow = false
-let LIFE = 3;
+let life = 3;
 let SCORE = 0;
-let highSCORE=0
+let highSCORE
 
-localStorage.setItem('score', '0');
+// localStorage.setItem('score', '0');
 let scoreadd = 10;
-let LEVEL = 1;
+let level = 1;
 let max = 3;
 let over = false;
 
@@ -29,14 +29,14 @@ let over = false;
 ctx.lineWidth = 3;
 
 const paddle = {
-    x : cvs.width/2 - paddlewidth/2,
-    y : cvs.height - paddlemargin - paddleh,
-    width : paddlewidth,
-    height : paddleh,
-    dx : 5
+    x: cvs.width / 2 - paddlewidth / 2,
+    y: cvs.height - paddlemargin - paddleh,
+    width: paddlewidth,
+    height: paddleh,
+    dx: 5
 }
 
-function drawpaddle(){
+function drawpaddle() {
     ctx.fillStyle = "gray";
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
@@ -44,46 +44,46 @@ function drawpaddle(){
     ctx.strokeRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
-document.addEventListener("keydown", function(event){
-if(event.key === "ArrowLeft"){
-    leftarrow = true;
-} else if(event.key === "ArrowRight"){
-    rightarrow = true;
-}
+document.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowLeft") {
+        leftarrow = true;
+    } else if (event.key === "ArrowRight") {
+        rightarrow = true;
+    }
 });
 
-document.addEventListener("keyup", function(event){
-    if(event.key === "ArrowLeft"){
+document.addEventListener("keyup", function (event) {
+    if (event.key === "ArrowLeft") {
         leftarrow = false;
-    } else if(event.key === "ArrowRight"){
+    } else if (event.key === "ArrowRight") {
         rightarrow = false;
     }
 });
 
-function movepaddle(){
-    if(rightarrow && paddle.x + paddle.width < cvs.width){
+function movepaddle() {
+    if (rightarrow && paddle.x + paddle.width < cvs.width) {
         paddle.x += paddle.dx;
-    }else if(leftarrow && paddle.x > 0){
+    } else if (leftarrow && paddle.x > 0) {
         paddle.x -= paddle.dx;
     }
 }
 
 const ball = {
-    x : cvs.width/2,
-    y : paddle.y - ballrd,
-    radius : ballrd,
-    speed : 4,
-    dx : 3 * (Math.random()*2 - 1),
-    dy : -3
+    x: cvs.width / 2,
+    y: paddle.y - ballrd,
+    radius: ballrd,
+    speed: 4,
+    dx: 3 * (Math.random() * 2 - 1),
+    dy: -3
 }
 
-function drawball(){
+function drawball() {
     ctx.beginPath();
 
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fillStyle = "yellow";
     ctx.fill();
-    
+
     ctx.strokeStyle = "orange";
     ctx.stroke();
 
@@ -91,45 +91,45 @@ function drawball(){
 
 }
 
-function moveball(){
+function moveball() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 }
 
-function ballwallcollision(){
-    if(ball.x + ball.radius > cvs.width || ball.x - ball.radius < 0){
+function ballwallcollision() {
+    if (ball.x + ball.radius > cvs.width || ball.x - ball.radius < 0) {
         ball.dx = -ball.dx;
-       
+
     }
-    if(ball.y-ball.radius < 0){
+    if (ball.y - ball.radius < 0) {
         ball.dy = -ball.dy;
-        
+
     }
-    if(ball.y + ball.radius > cvs.height){
-        LIFE--;
+    if (ball.y + ball.radius > cvs.height) {
+        life--;
         resetBall();
     }
 }
 
-function resetBall(){
-    ball.x = cvs.width/2;
+function resetBall() {
+    ball.x = cvs.width / 2;
     ball.y = paddle.y - ballrd;
-    ball.dx = 3 * (Math.random()*2 - 1);
+    ball.dx = 3 * (Math.random() * 2 - 1);
     ball.dy = -3;
 }
 
 function ballpaddlecollision() {
-    if(ball.x < paddle.x + paddle.width && ball.x > paddle.x && ball.y < paddle.y + paddle.height && ball.y > paddle.y){
+    if (ball.x < paddle.x + paddle.width && ball.x > paddle.x && ball.y < paddle.y + paddle.height && ball.y > paddle.y) {
 
-        let collidePoint = ball.x - (paddle.x + paddle.width/2);
+        let collidePoint = ball.x - (paddle.x + paddle.width / 2);
 
-        collidePoint = collidePoint / (paddle.width/2);
+        collidePoint = collidePoint / (paddle.width / 2);
 
-        let angle = collidePoint * Math.PI/3;
+        let angle = collidePoint * Math.PI / 3;
 
         ball.dx = ball.speed * Math.sin(angle);
         ball.dy = -ball.speed * Math.cos(angle);
-        
+
     }
 }
 
@@ -147,13 +147,13 @@ const brick = {
 
 let bricks = [];
 
-function createBricks(){
-    for(let r=0; r<brick.row; r++){
+function createBricks() {
+    for (let r = 0; r < brick.row; r++) {
         bricks[r] = [];
-        for(let c=0;c<brick.column; c++){
+        for (let c = 0; c < brick.column; c++) {
             bricks[r][c] = {
-                x: c*(brick.offSetLeft + brick.width) + brick.offSetLeft,
-                y: r*(brick.offSetTop + brick.height) + brick.offSetTop + brick.marginTop,
+                x: c * (brick.offSetLeft + brick.width) + brick.offSetLeft,
+                y: r * (brick.offSetTop + brick.height) + brick.offSetTop + brick.marginTop,
                 status: true
             }
         }
@@ -163,14 +163,14 @@ function createBricks(){
 
 createBricks();
 
-function drawbricks(){
-    for(let r=0; r<brick.row; r++){
-        for(let c=0;c<brick.column; c++){
+function drawbricks() {
+    for (let r = 0; r < brick.row; r++) {
+        for (let c = 0; c < brick.column; c++) {
             let b = bricks[r][c];
-            if(b.status){
+            if (b.status) {
                 ctx.fillStyle = brick.fillColor;
                 ctx.fillRect(b.x, b.y, brick.width, brick.height);
-                
+
                 ctx.strokeStyle = brick.strokeColor;
                 ctx.strokeRect(b.x, b.y, brick.width, brick.height);
             }
@@ -179,53 +179,53 @@ function drawbricks(){
 }
 
 
-function ballbrickcollision(){
-    for(let r=0; r<brick.row; r++){
-        for(let c=0;c<brick.column; c++){
+function ballbrickcollision() {
+    for (let r = 0; r < brick.row; r++) {
+        for (let c = 0; c < brick.column; c++) {
             let b = bricks[r][c];
-            if(b.status){
-                if(ball.x + ball.radius > b.x && ball.x - ball.radius < b.x + brick.width && ball.y + ball.radius > b.y && ball.y - ball.radius < b.y + brick.height){
+            if (b.status) {
+                if (ball.x + ball.radius > b.x && ball.x - ball.radius < b.x + brick.width && ball.y + ball.radius > b.y && ball.y - ball.radius < b.y + brick.height) {
                     ball.dy = -ball.dy;
                     b.status = false;
                     SCORE += scoreadd;
-                    
+
                 }
             }
         }
     }
 }
 
-function showGamePoints(text, textX, textY){
+function points(text, textX, textY) {
     ctx.fillStyle = "orange";
     ctx.font = "25px Germania One";
     ctx.fillText(text, textX, textY);
 
 }
 
-function gameover(){
-    if(LIFE < 0){
+function gameover() {
+    if (life < 0) {
         over = true;
-        showGamePoints("Game Over", cvs.width/2 - 40, cvs.height/2);
-        showGamePoints("Your Score"+"="+SCORE, cvs.width/2 -40, cvs.height/2+30); 
-        showGamePoints("Refresh to Play Again!", cvs.width/2 - 100, cvs.height/2 + 60); 
+        points("Game Over", cvs.width / 2 - 40, cvs.height / 2);
+        points("Your Score" + "=" + SCORE, cvs.width / 2 - 40, cvs.height / 2 + 30);
+        points("Refresh to Play Again!", cvs.width / 2 - 100, cvs.height / 2 + 60);
     }
 }
 
-function levelup(){
-    let isLevelDone = true;
+function levelup() {
+    let done = true;
 
-    for(let r=0; r< brick.row; r++){
-        for(let c=0; c< brick.column; c++){
-            isLevelDone = isLevelDone && !bricks[r][c].status;
+    for (let r = 0; r < brick.row; r++) {
+        for (let c = 0; c < brick.column; c++) {
+            done = done && !bricks[r][c].status;
         }
     }
 
-    if(isLevelDone){
-        if(LEVEL >= max){
+    if (done) {
+        if (level >= max) {
             over = true;
-            
-            showGamePoints("Win Win !", cvs.width/2-45, cvs.height/2);
-            showGamePoints("High Score"+localStorage.getItem(SCORE), cvs.width/2-45, cvs.height/2);
+
+            points("Win Win !", cvs.width / 2 - 45, cvs.height / 2);
+            points("High Score" + localStorage.getItem(SCORE), cvs.width / 2 - 45, cvs.height / 2);
             // localStorage.getItem("mytime");
             return;
         }
@@ -233,42 +233,40 @@ function levelup(){
         createBricks();
         ball.speed += 0.5;
         resetBall();
-        LEVEL++;
+        level++;
     }
 }
 
-function draw(){
+function draw() {
     drawpaddle();
     drawball();
     drawbricks();
-    showGamePoints("Score:" + SCORE, 35, 25);
-    showGamePoints("High Score:" + highSCORE, 295, 25);
-    
+    points("Score:" + SCORE, 35, 25);
+    points("High Score:" + localStorage.getItem('high score'), 295, 25);
+
     // console.log(SCORE)
-    localStorage.setItem('score',SCORE);
-    showGamePoints("Life:" + LIFE, cvs.width-190, 25);
-    showGamePoints("Level:" + LEVEL, cvs.width/2 - 40, 25);  
+    highSCORE = SCORE;
+    localStorage.setItem('high score', highSCORE);
+    points("Life:" + life, cvs.width - 190, 25);
+    points("Level:" + level, cvs.width / 2 - 40, 25);
 }
 
-function update(){
-movepaddle();
-moveball();
-ballwallcollision();
-ballpaddlecollision();
-ballbrickcollision();
-gameover();
-levelup();  
+function update() {
+    movepaddle();
+    moveball();
+    ballwallcollision();
+    ballpaddlecollision();
+    ballbrickcollision();
+    gameover();
+    levelup();
 }
 
-function loop(){
-    ctx.drawImage(background, 0,0,background.width=1380,background.height=626);
-
+function loop() {
+    ctx.drawImage(background, 0, 0, background.width = 1380, background.height = 626);
     draw();
-
     update();
-
-    if(!over){
-    requestAnimationFrame(loop);
+    if (!over) {
+        requestAnimationFrame(loop);
     }
 }
 
